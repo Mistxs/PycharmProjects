@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>trash.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+trash.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">requests</span>
+<span class="s0">import </span><span class="s1">json</span>
+<span class="s0">import </span><span class="s1">pprint</span>
+
+
+<span class="s1">salon_id = input(</span><span class="s2">&quot;Введите salon id &quot;</span><span class="s0">, </span><span class="s1">)</span>
+<span class="s1">stdate = input(</span><span class="s2">&quot;Введите Начальную дату визитов (формат YYYY-MM-DD) &quot;</span><span class="s0">, </span><span class="s1">)</span>
+<span class="s1">enddate = input(</span><span class="s2">&quot;Введите Конечную дату визитов (формат YYYY-MM-DD) &quot;</span><span class="s0">, </span><span class="s1">)</span>
+<span class="s1">c_stdate = input(</span><span class="s2">&quot;Введите Начальную дату создания визитов (формат YYYY-MM-DD) &quot;</span><span class="s0">, </span><span class="s1">)</span>
+<span class="s1">c_enddate = input(</span><span class="s2">&quot;Введите Конечную дату создания визитов (формат YYYY-MM-DD) &quot;</span><span class="s0">, </span><span class="s1">)</span>
+<span class="s1">page = input(</span><span class="s2">&quot;Введите страницу (в api запросе на получение записей максимум 1000 результатов на страницу, если записей меньше, просто оставьте 1 &quot;</span><span class="s0">, </span><span class="s1">)</span>
+
+
+
+<span class="s1">url = </span><span class="s2">f&quot;https://api.yclients.com/api/v1/records/</span><span class="s0">{</span><span class="s1">salon_id</span><span class="s0">}</span><span class="s2">?start_date=</span><span class="s0">{</span><span class="s1">stdate</span><span class="s0">}</span><span class="s2">&amp;end_date=</span><span class="s0">{</span><span class="s1">enddate</span><span class="s0">}</span><span class="s2">&amp;c_start_date=</span><span class="s0">{</span><span class="s1">c_stdate</span><span class="s0">}</span><span class="s2">&amp;c_end_date=</span><span class="s0">{</span><span class="s1">c_enddate</span><span class="s0">}</span><span class="s2">&amp;page=</span><span class="s0">{</span><span class="s1">page</span><span class="s0">}</span><span class="s2">&amp;count=1000&quot;</span>
+
+<span class="s1">payload = </span><span class="s2">&quot;&quot;</span>
+<span class="s1">headers = {</span>
+    <span class="s2">'Accept'</span><span class="s1">: </span><span class="s2">'application/vnd.yclients.v2+json'</span><span class="s0">,</span>
+    <span class="s2">'Content-Type'</span><span class="s1">: </span><span class="s2">'application/json'</span><span class="s0">,</span>
+    <span class="s2">'Authorization'</span><span class="s1">: </span><span class="s2">'rj257pguzmdk9fgaz8cr, e69793634796c00b57cb4bfd34f361d8'</span><span class="s0">,</span>
+    <span class="s2">'Cookie'</span><span class="s1">: </span><span class="s2">'__cf_bm=SRoFlSyUb8pCm_Hy6teKbZSVP0RvifVqk_U5L1yhbPY-1672310753-0-ASpA43kPIrIv6YwW/UwhZptVR9zXq7fJ76HU4yXJ35SavwZOW89gSTDFeSiN6VRjSMGSwWNbqGemyCrN6T19heQ=; _cfuvid=p7nUXL8oIvXY2lDDmXMQABeybXrWwPcphBL1X4PPq6I-1672310753861-0-604800000; auth=1ssiuqf71r7sethgdi176k8ll6gju5tc8rapffud16sqa5oihdh01s13sjlj7jjb'</span>
+<span class="s1">}</span>
+
+<span class="s1">response = requests.request(</span><span class="s2">&quot;GET&quot;</span><span class="s0">, </span><span class="s1">url</span><span class="s0">, </span><span class="s1">headers=headers</span><span class="s0">, </span><span class="s1">data=payload)</span>
+<span class="s1">request_data = response.json()</span>
+<span class="s1">rec_id = []</span>
+<span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">0</span><span class="s0">, </span><span class="s1">len(request_data[</span><span class="s2">&quot;data&quot;</span><span class="s1">])):</span>
+    <span class="s1">rec_id.append(request_data[</span><span class="s2">&quot;data&quot;</span><span class="s1">][i][</span><span class="s2">&quot;id&quot;</span><span class="s1">])</span>
+<span class="s1">print(rec_id)</span>
+<span class="s4">#</span>
+
+<span class="s0">def </span><span class="s1">put_record(rec_id</span><span class="s0">, </span><span class="s1">data):</span>
+    <span class="s1">url3 = </span><span class="s2">f&quot;https://api.yclients.com/api/v1/record/</span><span class="s0">{</span><span class="s1">salon_id</span><span class="s0">}</span><span class="s2">/</span><span class="s0">{</span><span class="s1">rec_id</span><span class="s0">}</span><span class="s2">&quot;</span>
+    <span class="s1">payload = json.dumps(data)</span>
+    <span class="s1">headers = {</span>
+        <span class="s2">'Accept'</span><span class="s1">: </span><span class="s2">'application/vnd.yclients.v2+json'</span><span class="s0">,</span>
+        <span class="s2">'Content-Type'</span><span class="s1">: </span><span class="s2">'application/json'</span><span class="s0">,</span>
+        <span class="s2">'Authorization'</span><span class="s1">: </span><span class="s2">'rj257pguzmdk9fgaz8cr, e69793634796c00b57cb4bfd34f361d8'</span><span class="s0">,</span>
+        <span class="s2">'Cookie'</span><span class="s1">: </span><span class="s2">'__cf_bm=7U9A9XA22HiCfsgeV5.7CEWM2ZO05_FpxXCoLZf6zZU-1672309174-0-AW4GWNaYZ9lJc86eOJ2WNGqYj2RrATN2R9QjSGHLxt72J9O48Ho0GR6LhnGUfboA1IOlPXJ4YCY0sQlv4/GLoFc=; _cfuvid=1N8l_emLiaoDXvgjX8IezQBDkgTiU8HSS5sHnIN9LpQ-1672309174478-0-604800000; auth=1ssiuqf71r7sethgdi176k8ll6gju5tc8rapffud16sqa5oihdh01s13sjlj7jjb'</span>
+    <span class="s1">}</span>
+
+    <span class="s1">response3 = requests.request(</span><span class="s2">&quot;PUT&quot;</span><span class="s0">, </span><span class="s1">url3</span><span class="s0">, </span><span class="s1">headers=headers</span><span class="s0">, </span><span class="s1">data=payload)</span>
+    <span class="s1">pprint.pprint(response3.text)</span>
+
+
+<span class="s0">def </span><span class="s1">read_record(rec_id):</span>
+    <span class="s1">url2 = </span><span class="s2">f&quot;https://api.yclients.com/api/v1/record/</span><span class="s0">{</span><span class="s1">salon_id</span><span class="s0">}</span><span class="s2">/</span><span class="s0">{</span><span class="s1">rec_id</span><span class="s0">}</span><span class="s2">&quot;</span>
+
+    <span class="s1">payload = {}</span>
+    <span class="s1">headers = {</span>
+        <span class="s2">'Accept'</span><span class="s1">: </span><span class="s2">'application/vnd.yclients.v2+json'</span><span class="s0">,</span>
+        <span class="s2">'Content-Type'</span><span class="s1">: </span><span class="s2">'application/json'</span><span class="s0">,</span>
+        <span class="s2">'Authorization'</span><span class="s1">: </span><span class="s2">'rj257pguzmdk9fgaz8cr, e69793634796c00b57cb4bfd34f361d8'</span><span class="s0">,</span>
+        <span class="s2">'Cookie'</span><span class="s1">: </span><span class="s2">'__cf_bm=7U9A9XA22HiCfsgeV5.7CEWM2ZO05_FpxXCoLZf6zZU-1672309174-0-AW4GWNaYZ9lJc86eOJ2WNGqYj2RrATN2R9QjSGHLxt72J9O48Ho0GR6LhnGUfboA1IOlPXJ4YCY0sQlv4/GLoFc=; _cfuvid=1N8l_emLiaoDXvgjX8IezQBDkgTiU8HSS5sHnIN9LpQ-1672309174478-0-604800000; auth=1ssiuqf71r7sethgdi176k8ll6gju5tc8rapffud16sqa5oihdh01s13sjlj7jjb'</span>
+    <span class="s1">}</span>
+
+    <span class="s1">response2 = requests.request(</span><span class="s2">&quot;GET&quot;</span><span class="s0">, </span><span class="s1">url2</span><span class="s0">, </span><span class="s1">headers=headers</span><span class="s0">, </span><span class="s1">data=payload)</span>
+    <span class="s1">request_data2 = response2.json()</span>
+    <span class="s1">ret = request_data2[</span><span class="s2">&quot;data&quot;</span><span class="s1">]</span>
+    <span class="s1">print(</span><span class="s2">&quot;Проверяем детали записи&quot;</span><span class="s1">)</span>
+    <span class="s1">pprint.pprint(ret)</span>
+    <span class="s4"># сохраняем значение по умолчанию</span>
+    <span class="s1">true_attendance = request_data2[</span><span class="s2">&quot;data&quot;</span><span class="s1">][</span><span class="s2">&quot;attendance&quot;</span><span class="s1">]</span>
+
+    <span class="s4"># меняем статус визита на клиент пришел</span>
+    <span class="s1">ret[</span><span class="s2">&quot;attendance&quot;</span><span class="s1">] = </span><span class="s3">1</span>
+    <span class="s4"># запускаем функцию с пут запросом</span>
+    <span class="s1">put_record(rec_id</span><span class="s0">, </span><span class="s1">ret)</span>
+
+    <span class="s4"># проверяем че натворили</span>
+    <span class="s1">print(</span><span class="s2">&quot;Проверяем что изменилось в записи&quot;</span><span class="s1">)</span>
+    <span class="s1">response2 = requests.request(</span><span class="s2">&quot;GET&quot;</span><span class="s0">, </span><span class="s1">url2</span><span class="s0">, </span><span class="s1">headers=headers</span><span class="s0">, </span><span class="s1">data=payload)</span>
+    <span class="s1">request_data2 = response2.json()</span>
+    <span class="s1">pprint.pprint(request_data2)</span>
+
+    <span class="s4"># меняем статус визита на ожидание</span>
+    <span class="s1">ret[</span><span class="s2">&quot;attendance&quot;</span><span class="s1">] = </span><span class="s3">0</span>
+    <span class="s4"># запускаем функцию с пут запросом</span>
+    <span class="s1">put_record(rec_id</span><span class="s0">, </span><span class="s1">ret)</span>
+
+    <span class="s4"># меняем статус визита на изначальный</span>
+    <span class="s1">ret[</span><span class="s2">&quot;attendance&quot;</span><span class="s1">] = true_attendance</span>
+    <span class="s4"># запускаем функцию с пут запросом</span>
+    <span class="s1">put_record(rec_id</span><span class="s0">, </span><span class="s1">ret)</span>
+
+    <span class="s1">print(</span><span class="s2">&quot;Проверяем изменения обратно&quot;</span><span class="s1">)</span>
+    <span class="s1">response2 = requests.request(</span><span class="s2">&quot;GET&quot;</span><span class="s0">, </span><span class="s1">url2</span><span class="s0">, </span><span class="s1">headers=headers</span><span class="s0">, </span><span class="s1">data=payload)</span>
+    <span class="s1">request_data2 = response2.json()</span>
+    <span class="s1">pprint.pprint(request_data2)</span>
+
+
+
+<span class="s0">for </span><span class="s1">j </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">0</span><span class="s0">, </span><span class="s1">len(rec_id)):</span>
+   <span class="s1">read_record(rec_id[j])</span>
+</pre>
+</body>
+</html>
