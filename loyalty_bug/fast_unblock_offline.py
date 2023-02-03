@@ -16,14 +16,16 @@ def get_document(salon_id, record_id):
 
     document = response_clean["data"]["documents"][0]["id"]
     c_date = response_clean["data"]["create_date"]
+    v_date = response_clean["data"]["datetime"]
     c_date_pretty = c_date.split("T")
+    v_date_pretty = v_date.split("T")
     new_date = c_date_pretty[0]
+    end_date = v_date_pretty[0]
     # print(document, new_date)
-    return document, new_date
+    return document, new_date, end_date
 
-def get_kkm_id(salon_id, doc_id, date):
-
-    url = f"https://api.yclients.com/api/v1/kkm_transactions/{salon_id}?start_date={date}&end_date={date}&editable_length=100"
+def get_kkm_id(salon_id, doc_id, date, enddate):
+    url = f"https://api.yclients.com/api/v1/kkm_transactions/{salon_id}?start_date={date}&end_date={enddate}&editable_length=1000"
     payload = {}
     headers = {
         'Accept': 'application/vnd.yclients.v2+json',
@@ -33,15 +35,25 @@ def get_kkm_id(salon_id, doc_id, date):
     }
     response = requests.request("GET", url, headers=headers, data=payload)
     pretty_response = response.json()
-    kkm_id = 0
+    kkm_id = 1
+    cnt = 0
+    listofid = []
     for i in range(len(pretty_response["data"])):
         if pretty_response["data"][i]["document_id"] == doc_id:
-            kkm_id = pretty_response["data"][i]["id"]
-    return kkm_id
+            # print("Step ", i)
+            # print(cnt, kkm_id, listofid)
+            cnt += 1
+            if cnt > 1:
+                listofid.append(pretty_response["data"][i]["id"])
+            else:
+                kkm_id = pretty_response["data"][i]["id"]
+    listofid.append(kkm_id)
+    max_kkm = max(listofid)
+    return max_kkm
 
 
 document = get_document(764917, 572948924)
-kkm_id = get_kkm_id(764917,document[0],document[1])
+kkm_id = get_kkm_id(764917,document[0],document[1],document[2])
 
 print(f"UPDATE documents SET bill_print_status = 1 WHERE id = {document[0]};")
 print(f"UPDATE kkm_transactions SET status = 3 WHERE id = {kkm_id};")
