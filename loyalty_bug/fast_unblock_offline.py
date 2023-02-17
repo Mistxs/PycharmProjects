@@ -107,3 +107,17 @@ print(f"UPDATE kkm_transactions SET status = 3 WHERE id = {kkm_id};")
 print(check_record(543449,"2023-01-23",653941116))
 print(check_kkm(543449,"2023-01-23","2023-02-17",653941116))
 
+def unblock():
+    import requests
+
+    url = "https://yclients.com/tester/unlock_record/579809323"
+
+    payload = {}
+    headers = {
+        'Cookie': 'auth=u-11946640-e76d93a1473746138eee5; __cf_bm=4dMNr2uHkbT9DFcrK4jWQJc0FjKbC5.y2QSBRH4BYqM-1676655587-0-AQodyx+YbP2/gaVZiDgnqHKrQkthjuL3SZHGNMIlL5l7xD8+uR/hPHDbj+kbLxvvGNIFUsWd94XVHgIxzd+jqhM=; _cfuvid=S2mcafmZTl.ESleaxwuNMZuhlR5SZ4ZgTc6coohIAMo-1676652662027-0-604800000; auth=f5h1qav8jbiepmlvjd17hnplesoeb95mt4g9luq1m645ns8u2ld279k75sntonqm; ycl_language_id=1',
+        'Authorization': 'Basic YS5maWxpcHBvdkB5Y2xpZW50cy50ZWNoOk9zZTd2Z3Q1'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(response.text)

@@ -1,28 +1,43 @@
-import requests
-import json
-
-import json
-
-with open("file.json", "r") as f:
-    indata = f.read()
-
-pretty_data = json.loads(indata)
-data = pretty_data["data"]
-
-kkm_array = []
-doc_array = []
-
-for i in range(0, len(data)):
-    kkm_id = data[i]["id"]
-    doc_id = data[i]["document_id"]
-    kkm_array.append(kkm_id)
-    doc_array.append(doc_id)
-
-print(f"UPDATE documents SET bill_print_status = 1 WHERE id in {doc_array};")
-print(f"UPDATE kkm_transactions SET status = 3 WHERE id in {kkm_array};")
+# stri = "2023-02-17T15:32:13+0300"
 #
-# with open('sql_line.csv', 'a') as outfile:
-#     json.dump(new_return, outfile)
-# f = open('sql_line.csv', 'a')
-# f.write('\n')
-# f.close()
+# def datechanger(string):
+#     truedate = string.split("T")
+#     return truedate[0]
+#
+# print(datechanger(stri))
+import requests
+
+url = 'https://www.yclients.com/signin'
+
+# Важно. По умолчанию requests отправляет вот такой
+# заголовок 'User-Agent': 'python-requests/2.22.0 ,  а это приводит к тому , что Nginx
+# отправляет 404 ответ. Поэтому нам нужно сообщить серверу, что запрос идет от браузера
+
+user_agent_val = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
+
+# Создаем сессию и указываем ему наш user-agent
+session = requests.Session()
+r = session.get(url, headers = {
+    'User-Agent': user_agent_val
+})
+
+# Указываем referer. Иногда , если не указать , то приводит к ошибкам.
+session.headers.update({'Referer':url})
+
+#Хотя , мы ранее указывали наш user-agent и запрос удачно прошел и вернул
+# нам нужный ответ, но user-agent изменился на тот , который был
+# по умолчанию. И поэтому мы обновляем его.
+session.headers.update({'User-Agent':user_agent_val})
+
+# Получаем значение _xsrf из cookies
+_xsrf = session.cookies.get('_xsrf', domain=".hh.ru")
+
+# Осуществляем вход с помощью метода POST с указанием необходимых данных
+post_request = session.post(url, {
+     'login': 'a.filippov@yclients.tech',
+     'password': 'Ose7vgt5',
+     '_xsrf':_xsrf,
+     'remember':'yes',
+})
+
+print(post_request.text)
