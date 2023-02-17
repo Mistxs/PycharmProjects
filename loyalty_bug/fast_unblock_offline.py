@@ -55,5 +55,55 @@ def get_kkm_id(salon_id, doc_id, date, enddate):
 document = get_document(764917, 572948924)
 kkm_id = get_kkm_id(764917,document[0],document[1],document[2])
 
+def check_record(salon_id,date,doc_id):
+    url = f"https://api.yclients.com/api/v1/records/{salon_id}?c_start_date={date}&c_end_date={date}"
+
+    payload = ""
+    headers = {
+        'Accept': 'application/vnd.yclients.v2+json',
+        'Content-Type': 'application/json',
+        'Authorization': 'rj257pguzmdk9fgaz8cr, e69793634796c00b57cb4bfd34f361d8',
+        'Cookie': '__cf_bm=j28qd_0gWsq8tDnlbho_8Ws2ejwXXpV12lVmxqVnho0-1676648874-0-AbtSyJJNcNVe5MBzCepK9FK0SeYj6zUOZOXImY5knt3wDYnY4EicUCasyw7YbAzjqM8kdCMy5LWW930E3KRsGu8=; _cfuvid=9cQUbYnLwvNyv035C3qkAXZChlAylSu.eOSEjgzzO6Y-1676644402973-0-604800000; auth=1ssiuqf71r7sethgdi176k8ll6gju5tc8rapffud16sqa5oihdh01s13sjlj7jjb'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+    pretty_respone = response.json()
+    isprint = "none"
+    for i in range(len(pretty_respone["data"])):
+        # print(pretty_respone["data"][i]["documents"][0])
+        if pretty_respone["data"][i]["documents"][0]["id"] == doc_id:
+            isprint = pretty_respone["data"][i]["is_sale_bill_printed"]
+    return isprint
+
+def check_kkm(salon_id, date, enddate, doc_id):
+    url = f"https://api.yclients.com/api/v1/kkm_transactions/{salon_id}?start_date={date}&end_date={enddate}&editable_length=1000"
+    payload = {}
+    headers = {
+        'Accept': 'application/vnd.yclients.v2+json',
+        'Content-Type': 'application/json',
+        'Authorization': 'rj257pguzmdk9fgaz8cr, e69793634796c00b57cb4bfd34f361d8',
+        'Cookie': '__cf_bm=dnigEGEw3ptS6QERE116noZ8Mzcv771hc15Cgu7juHs-1675446257-0-AQlXxGDz/f88YhROdXbTNvNJolcFCF4QAWWmZTbtSYLhwu1buou4i8cCreIMjjLP2YF70XVLwkO3/+aG6qIFp5o=; _cfuvid=1wJyCXBCk1G0sB22H8b_BAYEhEgvZrlopXuFMDmygIU-1675324909407-0-604800000; auth=1ssiuqf71r7sethgdi176k8ll6gju5tc8rapffud16sqa5oihdh01s13sjlj7jjb'
+    }
+    response = requests.request("GET", url, headers=headers, data=payload)
+    pretty_response = response.json()
+    kkm_status = "none"
+    cnt = 0
+    trans_type = -1
+    for i in range(len(pretty_response["data"])):
+        if pretty_response["data"][i]["document_id"] == doc_id:
+            cnt += 1
+            trans_type = pretty_response["data"][i]["type"]["id"]
+            kkm_pre_status = pretty_response["data"][i]["status"]["id"]
+            # print(trans_type, kkm_pre_status)
+    if cnt == 1 and trans_type == 0:
+        kkm_status = "True"
+    else:
+        kkm_status = "False"
+    return kkm_status
+
 print(f"UPDATE documents SET bill_print_status = 1 WHERE id = {document[0]};")
 print(f"UPDATE kkm_transactions SET status = 3 WHERE id = {kkm_id};")
+
+print(check_record(543449,"2023-01-23",653941116))
+print(check_kkm(543449,"2023-01-23","2023-02-17",653941116))
+
