@@ -1,0 +1,67 @@
+
+
+    Речек записи выполнен. Анлок не требуется.
+    Причина: isblock = False and isprint = True
+
+
+    2023-02-18 21:11:34.620885 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+    
+
+    Речек записи выполнен. Анлок не требуется.
+    Причина: isblock = False and isprint = True
+
+
+    2023-02-18 21:12:09.737224 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+    
+
+    Речек записи выполнен. Анлок не требуется.
+    Причина: isblock = False and isprint = False
+
+
+    2023-02-18 21:15:15.588704 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=580291938
+    
+
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = 667707539;
+    UPDATE kkm_transactions SET status = 3 WHERE id in [61547622, 61547623]; 
+
+
+    2023-02-18 21:16:37.438688 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579837390
+    
+
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = 667707539;
+    UPDATE kkm_transactions SET status = 3 WHERE id in [61547622, 61547623]; 
+
+
+    2023-02-18 21:17:11.724825 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579837390
+    
+    2023-02-18 21:17:42.599720 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579837390
+    
+
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = 667707539;
+    UPDATE kkm_transactions SET status = 3 WHERE id in [61547622, 61547623]; 
+
+
+    2023-02-18 21:18:03.899531 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579837390
+
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = 667707539;
+    UPDATE kkm_transactions SET status = 3 WHERE id in [61547622, 61547623]; 
+
+
+    2023-02-18 21:18:14.184389 Получен хук. Ожидаем запуска речека (10м) Филиал 543449.
+    Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579837390
+
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = 667707539;
+    UPDATE kkm_transactions SET status = 3 WHERE id in [61547622, 61547623]; 
+

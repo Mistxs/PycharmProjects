@@ -1,9 +1,12 @@
 import requests
 from flask import Flask
 from flask import request
+import datetime
 import time
 
 app = Flask(__name__)
+
+
 
 
 @app.route('/getrec', methods=['POST'])
@@ -13,40 +16,77 @@ def process_json():
         request_data = request.json
         if request_data["resource"] == "record" and request_data["status"] == "create":
             check_hook(request_data)
-
-
         return '200'
     else:
         return 'Content-Type not supported!'
 
 
 def check_hook(data):
-    print(data)
-    print(data["data"]["online"])
+    # print(data)
+    # print(data["data"]["online"])
     if data["data"]["online"] == True:
-        print("Получили хук об онлайн записи, проверим запись через 10 минут")
+        # print("Получили хук об онлайн записи, проверим запись через 10 минут")
         pretty_date = datechanger(data["data"]["create_date"])
         salon_id = data["data"]["company_id"]
         document = data["data"]["documents"][0]["id"]
         rec_id = data["data"]["id"]
-        time.sleep(600)
-        recheck(salon_id,pretty_date,document,rec_id)
-
+        time.sleep(120)
+        pretty_output_first(salon_id, rec_id)
+        recheck(salon_id, pretty_date, document, rec_id)
 
     else:
         print("Не онлайн запись")
 
 
-def recheck(salon_id, pretty_date, document,rec_id):
-    print('Запустился речек записи')
+def pretty_output_first(salon_id, rec_id):
+    now = datetime.datetime.now()
+    pretty_output = f'''
+    {now} Получен хук. Ожидаем запуска речека (10м) Филиал {salon_id}.
+    Ссылка на запись https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}'''
+    print(pretty_output)
+    f = open('log.txt', 'a')
+    f.write(pretty_output)
+    f.close()
+
+def pretty_output_second(code, res, doc, kkm):
+    pretty_output = "none"
+    if code == 1:
+        pretty_output = f'''
+    Речек записи выполнен. Необходима разблокировка.
+    Ответ от тестера: {res} '''
+    elif code == 2:
+        pretty_output = f'''
+    Речек записи выполнен. Требуется ручная разблокировка!
+    UPDATE documents SET bill_print_status = 1 WHERE id = {doc};
+    UPDATE kkm_transactions SET status = 3 WHERE id in {kkm}; '''
+    elif code == 3:
+        pretty_output = f'''
+    Речек записи выполнен. Анлок не требуется.
+    Причина: isblock = {doc} and isprint = {kkm}'''
+    print(pretty_output)
+    f = open('log.txt', 'a')
+    f.write("\n")
+    f.write(pretty_output)
+    f.write("\n\n")
+    f.close()
+
+def recheck(salon_id, pretty_date, document, rec_id):
+    # print('Запустился речек записи')
     block = check_record(salon_id, pretty_date, document)
-    isprint = check_kkm(salon_id, pretty_date, document)
+    isprint, kkm = check_kkm(salon_id, pretty_date, document)
 
     if block == True and isprint == "True":
         result = unblock_rec(rec_id)
-        print(f"Result of unblock: {result}")
+        # print(f"Result of unblock: {result}")
+        pretty_output_second(1, result, 0, 0)
+
+    elif block == True and isprint == "False":
+        # print(f"Больше одной ккм транзакции! Требуется ручное действие\nisblock = {block} and isprint = {isprint}")
+        pretty_output_second(2,0,document,kkm)
+
     else:
-        print(f"Анблока не было, причина: isblock = {block}, isprint = {isprint}")
+        # print(f"Анлок не требуется. Причина: isblock = {block} and isprint = {isprint}")
+        pretty_output_second(3,0,block,isprint)
 
 
 def datechanger(string):
@@ -75,7 +115,10 @@ def check_record(salon_id, date, doc_id):
     return isprint
 
 
+
+
 def check_kkm(salon_id, date, doc_id):
+    kkm = []
     url = f"https://api.yclients.com/api/v1/kkm_transactions/{salon_id}?start_date={date}&end_date={date}&editable_length=1000"
     payload = {}
     headers = {
@@ -93,13 +136,14 @@ def check_kkm(salon_id, date, doc_id):
         if pretty_response["data"][i]["document_id"] == doc_id:
             cnt += 1
             trans_type = pretty_response["data"][i]["type"]["id"]
+            kkm.append(pretty_response["data"][i]["id"])
             kkm_pre_status = pretty_response["data"][i]["status"]["id"]
             # print(trans_type, kkm_pre_status)
     if cnt == 1 and trans_type == 0:
         kkm_status = "True"
     else:
         kkm_status = "False"
-    return kkm_status
+    return kkm_status, kkm
 
 
 def unblock_rec(rec_id):

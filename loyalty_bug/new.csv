@@ -2,3 +2,28 @@
 234
 234
 234
+
+
+
+18.02.2023 13:05 Получен хук. Ожидаем запуска речека (10м) Филиал 546746.
+Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+Речек записи выполнен. Результат - анлока не было, причина isblock = False, isprint = True
+
+18.02.2023 13:10 Получен хук. Ожидаем запуска речека (10м) Филиал 546746.
+Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+Речек записи выполнен. Есть заблокированная запись. isblock = True, isprint = True
+Запуск тестера. Результат: Done
+
+18.02.2023 13:11 Получен хук. Ожидаем запуска речека (10м) Филиал 546746.
+Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+Речек записи выполнен. Есть заблокированная запись. isblock = True, isprint = True
+Запуск тестера. Результат: {More than one kkm}
+РУЧНОЙ АНЛОК! document id: 648475625 kkm id in (324234324,234324324)
+
+UPDATE documents SET bill_print_status = 1 WHERE id = 8634586435;
+UPDATE kkm_transactions SET status = 3 WHERE id in (34324345,34534543);
+
+18.02.2023 13:12 Получен хук. Ожидаем запуска речека (10м) Филиал 546746.
+Ссылка на запись https://yclients.com/timetable/543449#main_date=2023-01-28&open_modal_by_record_id=579830148
+Речек записи выполнен. Есть заблокированная запись, РУЧНОЙ АНЛОК isblock = True, isprint = False
+Внимание! Ручной анлок:
