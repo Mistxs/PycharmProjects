@@ -13,54 +13,67 @@ def process_json():
         request_data = request.json
         if request_data["resource"] == "record" and request_data["status"] == "create":
             check_hook(request_data)
+
         return '200'
     else:
         return 'Content-Type not supported!'
-    
+
 def check_hook(data):
     # print(data)
     # print(data["data"]["online"])
     if data["data"]["online"] == True:
-        # print("Получили хук об онлайн записи, проверим запись через 10 минут")
+
         pretty_date = datechanger(data["data"]["create_date"])
         salon_id = data["data"]["company_id"]
+        # print(f"Получили хук об онлайн записи, проверим запись через 10 минут. Филиал {salon_id}")
         document = data["data"]["documents"][0]["id"]
         rec_id = data["data"]["id"]
         now = datetime.datetime.now()
-        pretty_output_first(salon_id, now)
+        pretty_output_first(salon_id, rec_id, now)
         time.sleep(600)
         recheck(salon_id, pretty_date, document, rec_id, now)
 
     else:
         print("Не онлайн запись")
 
-def pretty_output_first(salon_id, timestamp):
+def pretty_output_first(salon_id, rec_id, timestamp):
 
-    pretty_output = f'''</br>
-    {timestamp} Получен хук. Ожидаем запуска речека (10м) Филиал {salon_id}.</br></br>'''
-    # print(pretty_output)
+    pretty_output = f'''
+    <p style= "color: #384258; font-size: 14px; margin-left:10px">
+    {timestamp}</br>Получен хук</br>Ссылка на запись <a href = "https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}"> 
+    https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</a></br> Ожидаем запуска речека (10м) Филиал {salon_id}.</p>
+
+    '''
+    print(pretty_output)
     f = open('log.txt', 'a')
     f.write(pretty_output)
     f.close()
 
 def pretty_output_second(code, res, doc, kkm, salon_id, rec_id, timestamp):
+    colorscheme = "border: 1px solid; padding: 10px; font-size: 14px; width: 80%"
     pretty_output = "none"
     if code == 1:
         pretty_output = f'''
-    {timestamp} Ссылка на запись https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</br>
+    <p style = "color:#076e1b; {colorscheme}">
+    {timestamp}</br>Ссылка на запись <a href = "https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}"> 
+    https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</a></br>
     Речек записи выполнен. Необходима разблокировка.</br>
-    Ответ от тестера: {res}</br> </br>'''
+    Ответ от тестера: {res}</p>'''
     elif code == 2:
         pretty_output = f'''
-    {timestamp}  Ссылка на запись https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</br>
+    <p style = "color:#f31717; {colorscheme}">
+    {timestamp}</br>Ссылка на запись <a href = "https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}"> 
+    https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</a></br>
     Речек записи выполнен. Требуется ручная разблокировка!</br>
     UPDATE documents SET bill_print_status = 1 WHERE id = {doc};</br>
-    UPDATE kkm_transactions SET status = 3 WHERE id in {kkm}; </br></br>'''
+    UPDATE kkm_transactions SET status = 3 WHERE id in {kkm};</p>'''
     elif code == 3:
         pretty_output = f'''
-    {timestamp} Ссылка на запись https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</br>
+    <p style = "color:#2716a9; {colorscheme}">
+    {timestamp}</br>Ссылка на запись <a href = "https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}"> 
+    https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={rec_id}</a></br>
     Речек записи выполнен. Анлок не требуется.</br>
-    Причина: isblock = {doc} and isprint = {kkm}</br></br>'''
+    Причина: isblock = {doc} and isprint = {kkm}</p>'''
     print(pretty_output)
     f = open('log.txt', 'a')
     f.write("\n")
@@ -162,8 +175,46 @@ def log():
     #     for line in f.readlines():
     #         print(line)
 
-    return f'''<h1> Log </h1>{text}'''
+    return f'''<h3> Log </h3>{text}
+<p style="font-size:12px; color: #49456a"> 
+Это актуальные логи. Архив можно посмотреть  <a href="/log_2">здесь</a></p>
+'''
 
+
+@app.route('/log_2')
+def log2():
+    # print(request)
+    f = open('log_2.txt', 'r')
+    text = f.read()
+    # print(text)
+    # print(text)
+
+    # with open('log.txt',"r") as f:
+    #     for line in f.readlines():
+    #         print(line)
+
+    return f'''<h3> Log </h3>{text}
+<p style="font-size:12px; color: #49456a"> 
+Это архивная страница с логами. Актуальные можно посмотреть <a href="/log">здесь</a></p>
+'''
+
+
+@app.route('/db')
+def db():
+    # print(request)
+    f = open('salon_db.txt', 'r')
+    text = f.read()
+    # print(text)
+    # print(text)
+
+    # with open('log.txt',"r") as f:
+    #     for line in f.readlines():
+    #         print(line)
+
+    return f'''<h3> Salons </h3>{text}
+<p style="font-size:14px; color: #49456a"> Прямая ссылка на настройку хуков
+<a href = "https://yclients.com/settings/web_hook/514463/"> https://yclients.com/settings/web_hook/514463/ </a></p>
+'''
 
 if __name__ == '__main__':
     app.run()
