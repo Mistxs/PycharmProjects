@@ -1,16 +1,18 @@
-from flask import Flask
-from flask import request
+from flask import Flask, render_template
 import requests
 import json
 import datetime
+import schedule
 
 app = Flask(__name__)
 
 salon_id = 780413
 cnt = -1
+now = datetime.date.today()
 
+data_list = [{}]
 def findrecord(salon_id):
-    now = datetime.date.today()
+
     # now = '2023-03-04'
     url = f"https://api.yclients.com/api/v1/records/{salon_id}?start_date={now}&end_date={now}"
     payload = {}
@@ -61,8 +63,8 @@ def payment(doc_id,abon_id,abon_num):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
-
     print(response.text)
+    
 
 
 def findmatch(services,cnt,serv):
@@ -75,9 +77,11 @@ def findmatch(services,cnt,serv):
             cat_ids.append(services[i]["category"]["id"])
     if serv[cnt] in service_ids:
         print("Есть пробитие, надо попробовать списать")
+        data_list[cnt]["check_res"] = "Есть абонемент, с которого можно списать занятие"
         return cnt
         # payment()
     else:
+        data_list[cnt]["check_res"] = "Нет услуг в абонементе для списания"
         print("Нет услуг в абонементе для списания")
     # print(service_ids, cat_ids)
     # print(serv[cnt])
@@ -100,10 +104,14 @@ def checkloyalty(phones):
     # print(f'{cnt}: {response_json["data"]}')
     if phones == '':
         print('Запись без клиента')
+        data_list[cnt]["name"] = "Запись без клиента"
+        data_list[cnt]["check_res"] = "Проверка невозможна, нет клиента"
         # loger(1)
     else:
+        data_list[cnt]["name"] = start[cnt]["client"]["name"]
         if len(response_json["data"]) == 0:
             print(f'Абонемента нет у клиента {phones}')
+            data_list[cnt]["check_res"] = "У клиента нет абонемента"
             # loger(2)
         elif len(response_json["data"]) > 0:
             # loger(3)
@@ -113,45 +121,44 @@ def checkloyalty(phones):
                     ids.append(response_json["data"][i]["id"])
                     abon_num.append(response_json["data"][i]["number"])
                     services.append(response_json["data"][i]["balance_container"]["links"])
-
             # print(f"Собрали услуги и id абиков: {services} / {ids}")
             numn = findmatch(services[0],cnt,serv)
     return ids,numn,abon_num
 
 
+# print(phones)
+
+
+db = []
+
 
 start = findrecord(salon_id)
-print(start)
-
-ids, phones,serv, docid = getnotpaid(start)
-print(ids)
-print(phones)
-
+ids, phones, serv, docid = getnotpaid(start)
 for i in range(len(phones)):
-    cnt += 1
-    print("================")
-    # print(checkloyalty(phones[i]))
-    abiks,counter,abik_num = checkloyalty(phones[i])
-    print(f"result: {abiks,counter,abik_num}")
-    if counter != -1 and counter:
-        print(f'doc_num: {docid[counter]}')
-        print(f'phone: {phones[counter]}')
-        # payment(docid[counter],abiks[0],abik_num[0])
-        # print(start[counter])
+        cnt += 1
+        print("================")
+        # print(checkloyalty(phones[i]))
+        data_list[cnt]["id"] = cnt
+        data_list[cnt]["master"] = start[cnt]["staff"]["position"]["title"]
+        data_list[cnt]["time"] = start[cnt]["date"]
+        data_list[cnt]["pay_res"] = "Запрос на списание не выполнялся"
+        data_list[cnt][
+            "link"] = f"https://yclients.com/timetable/{salon_id}#main_date=2023-01-28&open_modal_by_record_id={start[cnt]['id']}"
+        abiks, counter, abik_num = checkloyalty(phones[i])
+        print(f"result: {abiks, counter, abik_num}")
+        if counter != -1 and counter:
+            print(f'doc_num: {docid[counter]}')
+            print(f'phone: {phones[counter]}')
+            data_list[cnt]["pay_res"] = "Результат выполнения"
+            # payment(docid[counter],abiks[0],abik_num[0])
+            # print(start[counter])
+        data_list.append({})
+data_list.pop(-1)
 
-@app.route('/log')
-def log():
-    # print(request)
-    f = open('log.txt', 'r')
-    text = f.read()
-    # print(text)
-    # print(text)
 
-    # with open('log.txt',"r") as f:
-    #     for line in f.readlines():
-    #         print(line)
-
-    return
+@app.route('/autopayments')
+def ap():
+    return render_template('logs.html', data_list=data_list, now=now)
 
 
 if __name__ == '__main__':
