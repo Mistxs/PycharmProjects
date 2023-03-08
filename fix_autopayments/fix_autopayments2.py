@@ -248,7 +248,7 @@ app.config['JOBS'] = [
         'func': start,
         'trigger': 'cron',
         'hour': 21,
-        'minute': 45
+        'minute': 49
     }
 ]
 
