@@ -213,6 +213,7 @@ def save_db():
         f.close()
 
 def start():
+    print("ПОЕХАЛИ")
     global now
     now = datetime.date.today()
     prefind()
@@ -246,7 +247,7 @@ app.config['JOBS'] = [
         'func': start,
         'trigger': 'cron',
         'hour': 21,
-        'minute': 33
+        'minute': 35
     }
 ]
 
