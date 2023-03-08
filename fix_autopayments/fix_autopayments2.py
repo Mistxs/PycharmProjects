@@ -212,11 +212,14 @@ def save_db():
         f.write("\n")
         f.close()
 
-def start():
+def start(arg):
     time = datetime.datetime.now()
     print(f"\n запуск start {time}")
     global now
-    now = datetime.date.today()
+    if arg == 1:
+        now = datetime.date.today()
+    else:
+        now = arg
     prefind()
     global dataset
     global data_list
@@ -246,9 +249,10 @@ app.config['JOBS'] = [
     {
         'id': 'job1',
         'func': start,
+        'args': ("1",),
         'trigger': 'cron',
-        'hour': 21,
-        'minute': 50
+        'hour': 22,
+        'minute': 30
     }
 ]
 
@@ -274,6 +278,24 @@ def autolog():
         return f'''<h3> stdout </h3>
 {text}
         '''
+
+
+@app.route('/autopaymentsforce', methods=['GET', 'POST'])
+def force():
+    if request.method == 'POST':
+        inputdata = request.form.get('data')
+        print(inputdata)
+        output = start(inputdata)
+        return f"<h1>OK</h1>{output}"
+
+    return '''
+              <form id="" method="post" class="form-horizontal">
+    <label class="col-xs-3 control-label">Выберите дату</label>
+        <input type="date" class="form-control" name="data" min = "2023-03-01" max = "{{enddata}}" />
+    <button type="submit" class="btn btn-default">Показать</button>
+</form>'''
+
+
 
 if __name__ == '__main__':
     app.run()
