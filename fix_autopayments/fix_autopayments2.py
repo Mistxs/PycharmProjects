@@ -33,7 +33,7 @@ loyalty_visits = {}
 
 
 def findallrec():
-
+    print(f"Запуск поиска записей за дату: {now}")
     url = f"https://api.yclients.com/api/v1/records/{salon_id}?start_date={now}&end_date={now}&include_finance_transactions=1&page=1&count=1000"
     payload = ""
     headers = {
@@ -90,10 +90,6 @@ def parserloyal(data):
     # print(visit_ids)
     return visit_ids
 
-
-
-
-
 def prefind():
     global dataset
     global transaction_data
@@ -120,7 +116,7 @@ def prefind():
 def parsernew(data): # выбираю данные по тем визитам которые не обнаружились в транзакциях лояльности в сети, чтобы дальше работать  с этим списком
     for i in range(len(data)):
         if data[i]["visit_id"] in visits:
-            # print(data[i]["client"])
+            print(data[i]["client"])
             data_list[i]["client"] = data[i]["client"]["name"]
             data_list[i]["phone"] = data[i]["client"]["phone"]
             data_list[i]["doc_id"] = data[i]["documents"][0]["id"]
@@ -207,14 +203,14 @@ def save_db():
     if read_db(now) == False:
         f = open('db.json', 'a')
         out = json.dumps(new_data_list, ensure_ascii=False)
-        f.write(",\n")
+        f.write(", \n ")
         f.write(f'"{now}" : {out}')
         f.write("\n")
         f.close()
 
 def start(arg):
     time = datetime.datetime.now()
-    print(f"\n запуск start {time}")
+    print(f"\n запуск start {time} с аргументом {arg}")
     global now
     if arg == 1:
         now = datetime.date.today()
@@ -224,6 +220,8 @@ def start(arg):
     global dataset
     global data_list
     global new_data_list
+    # print(dataset)
+    data_list = [{}]
     parsernew(dataset["data"])
     data_list = [lst for lst in data_list if lst]
     print(data_list)
@@ -285,13 +283,16 @@ def force():
     if request.method == 'POST':
         inputdata = request.form.get('data')
         print(inputdata)
-        output = start(inputdata)
+        if inputdata == "":
+            output = start(1)
+        else:
+            output = start(inputdata)
         return f"<h1>OK</h1>{output}"
 
-    return '''
+    return f'''
               <form id="" method="post" class="form-horizontal">
     <label class="col-xs-3 control-label">Выберите дату</label>
-        <input type="date" class="form-control" name="data" min = "2023-03-01" max = "{{enddata}}" />
+        <input type="date" class="form-control" name="data" min = "2023-02-28" max = "{datetime.date.today()}" />
     <button type="submit" class="btn btn-default">Показать</button>
 </form>'''
 
