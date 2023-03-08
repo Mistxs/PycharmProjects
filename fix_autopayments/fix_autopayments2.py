@@ -265,7 +265,13 @@ def ap():
     if request.method == 'GET':
         return render_template('logs.html', data_list=new_data_list, now=now, enddata=now)
 
-
+@app.route('/autopaymentslog')
+def autolog():
+        f = open('stdout.txt', 'r')
+        text = f.read()
+        return f'''<h3> stdout </h3>
+{text}
+        '''
 
 if __name__ == '__main__':
     app.run()
