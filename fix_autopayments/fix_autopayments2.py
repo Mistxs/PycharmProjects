@@ -15,8 +15,8 @@ scheduler = APScheduler()
 
 salon_id = 780413
 
-# now = datetime.date.today()
-now = '2023-03-07'
+now = datetime.date.today()
+# now = '2023-03-07'
 data_list = [{}]
 new_data_list = []
 db = []
@@ -193,6 +193,16 @@ def payment(doc_id, abon_id, abon_num, counter):
     new_data_list[counter]["pay_res"] = pr_response["meta"]
 
 
+def read_db(date):
+    with open('db.json', 'r') as file:
+        file_content = file.read()
+    f = file_content + '\n}'
+    dict = eval(f)
+    if date in dict:
+        return dict[date]
+    else:
+        return False
+
 def save_db():
     if read_db(now) == False:
         f = open('db.json', 'a')
@@ -210,9 +220,6 @@ def start():
     global data_list
     global new_data_list
     parsernew(dataset["data"])
-
-
-
     data_list = [lst for lst in data_list if lst]
     print(data_list)
     print(len(data_list))
@@ -230,15 +237,7 @@ def start():
     save_db()
     return new_data_list
 
-def read_db(date):
-    with open('db.json', 'r') as file:
-        file_content = file.read()
-    f = file_content + '\n}'
-    dict = eval(f)
-    if date in dict:
-        return dict[date]
-    else:
-        return False
+
 
 
 app.config['JOBS'] = [
@@ -247,7 +246,7 @@ app.config['JOBS'] = [
         'func': start,
         'trigger': 'cron',
         'hour': 20,
-        'minute': 44
+        'minute': 47
     }
 ]
 
