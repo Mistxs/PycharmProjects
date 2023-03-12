@@ -20,7 +20,7 @@ def process_json():
 
 def check_hook(data):
     # print(data)
-    # print(data["data"]["online"])
+    # print(data["data"]["online"]) 
     if data["data"]["online"] == True:
 
         pretty_date = datechanger(data["data"]["create_date"])
