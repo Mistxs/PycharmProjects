@@ -1,5 +1,8 @@
-import datetime
+dataset = [{},{},{}]
+print(len(dataset))
 
-now = datetime.datetime.now() + datetime.timedelta(hours=2)
-y = now + datetime.timedelta(hours=2)
-print(y)
+
+for i in range(1,1000):
+    print(i)
+    if i == 5:
+        break
