@@ -48,6 +48,7 @@ https://a631-95-72-94-236.eu.ngrok.io/
         <p style="font-size:14px; color: #49456a"> Прямая ссылка на настройку хуков
         <a href = "https://yclients.com/settings/web_hook/439437/"> https://yclients.com/settings/web_hook/439437/ </a></p>
 
-
         <p style="font-size:14px; color: #49456a"> Прямая ссылка на настройку хуков
         <a href = "https://yclients.com/settings/web_hook/514463/"> https://yclients.com/settings/web_hook/514463/ </a></p>
+
+///////
