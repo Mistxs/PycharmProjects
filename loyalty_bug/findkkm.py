@@ -3,7 +3,7 @@ import datetime
 
 now = datetime.date.today()
 
-salon_id = 216720
+salon_id = 743154
 date = "2023-02-01"
 enddate = now
 
@@ -38,5 +38,9 @@ def get_kkm_id(salon_id,date, enddate):
 
     print(f"NEWDOC: {len(docs)}, {docs}")
 
+    print(f'''
+UPDATE documents SET bill_print_status = 1 WHERE id in ({', '.join(map(str, docs))});
+UPDATE kkm_transactions SET status = 3 WHERE id in ({', '.join(map(str, kkm))});
+''')
 
 get_kkm_id(salon_id, date, enddate)
